@@ -3,15 +3,23 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
   const [requirements, setRequirements] = useState("");
   const router = useRouter();
 
   const handleNavigate = () => {
+
       router.push('/grid'); // navigate to /grid
   };
 
+  const creditsStr = localStorage.getItem("credits");
+  if (!creditsStr) {
+    console.log(20)
+  } else {
+    console.log(creditsStr)
+  }
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setRequirements(e.target.value);
   };
