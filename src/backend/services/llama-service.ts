@@ -5,9 +5,10 @@ import { InferenceClient } from "@huggingface/inference";
 
 /**
  * Calls the LLaMA model to get a response
+ * @param userRequirements The requirements text to analyze
  */
-export async function callLlamaModel() {
-  // const apiToken =;
+export async function callLlamaModel(userRequirements: string) {
+  // const apiToken = ";
 
   const client = new InferenceClient(apiToken);
 

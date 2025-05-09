@@ -12,10 +12,12 @@ app.use(cors({
     credentials: true
 }));
 app.use(express.json());
-app.get('/llm', async (req, res) => {
+
+app.post('/llm', async (req, res) => {
     try {
-        console.log("llm accessed")
-        const response = await callLlamaModel();
+        const { requirements } = req.body;
+        console.log("Received requirements:", requirements);
+        const response = await callLlamaModel(requirements);
         res.json({
             success: true,
             data: response
@@ -23,12 +25,12 @@ app.get('/llm', async (req, res) => {
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({
-        success: false,
-        error: 'Failed to get LLM response'
+            success: false,
+            error: 'Failed to get LLM response'
         });
     }
-    });
+});
 
 app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
+    console.log(`Server is running on port ${PORT}`);
+});
