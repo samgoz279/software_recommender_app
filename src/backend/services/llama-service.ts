@@ -1,50 +1,46 @@
-const testPrompt = {
-  "messages": [
-    {"role": "user", "content": "What is the weather like in Boston?"},
-  ],
-  "functions": [
-    {
-      "name": "get_current_weather",
-      "description": "Get the current weather in a given location",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "location": {
-            "type": "string",
-            "description": "The city and state, e.g. San Francisco, CA",
-          },
-          "days": {
-            "type": "number",
-            "description": "for how many days ahead you wants the forecast",
-          },
-          "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
-        },
-      },
-      "required": ["location", "days"],
-    }
-  ],
-  "stream": false,
-  "function_call": "get_current_weather",
-};
+import { InferenceClient } from "@huggingface/inference";
+
+
+
 
 /**
  * Calls the LLaMA model to get a response
  */
 export async function callLlamaModel() {
-  const apiToken = process.env.apiToken;
+  // const apiToken =;
+
+  const client = new InferenceClient(apiToken);
 
   try {
-    const response = await fetch('https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiToken}`,
-        'Content-Type': 'application/json'
+    const chatCompletion = await client.chatCompletion({
+      provider: "fireworks-ai",
+      model: "meta-llama/Llama-3.1-8B-Instruct",
+      messages: [
+        {
+          role: "system",
+          content: `You are a requirements analysis assistant that helps extract structured requirements from user inputs.
+          
+    When given a list of requirements, you must respond with a JavaScript object that follows this exact format:
+    
+    const requirements = [
+      {
+        requirement: "Requirement Name",
+        example: "Example implementation details"
       },
-      body: JSON.stringify({ testPrompt, max_tokens: 100 }),
+      // Additional requirements...
+    ];
+    
+    Do not include any explanatory text, only output valid JavaScript code that can be evaluated.`
+        },
+        {
+          role: "user",
+          content: userRequirements
+        },
+      ],
     });
 
-    const data = await response.json();
-    return data.generated_text;
+    console.log(chatCompletion.choices[0].message);
+    return chatCompletion.choices[0].message;
   } catch (error) {
     console.error("Error calling LLaMA model:", error);
     throw error;
